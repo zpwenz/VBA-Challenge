@@ -1,0 +1,68 @@
+Sub Stocks()
+
+
+'define variables and summary table columns
+Dim ticker As String
+Dim volume As Double
+Dim opening As Double
+Dim closing As Double
+Dim yearlychange As Double
+Dim percentchange As Double
+Dim Summary As Integer
+Dim vol As Integer
+
+Range("I1").Value = "Ticker Symbol"
+Range("J1").Value = "Yearly Change"
+Range("K1").Value = "Percent Change"
+Range("L1").Value = "Total Volume"
+Range("M1").Value = "Opening"
+Range("N1").Value = "Closing"
+
+'start on second row since headers on already on first row
+Row = 2
+volume = 0
+'Avoid error caused by stocks with 0 as starting price (divide by zero)
+On Error Resume Next
+
+For x = 2 To 705714
+'opening prices are located in first row after the previous row has a different stock
+    If Cells(x - 1, 1).Value <> Cells(x, 1).Value Then
+    opening = Cells(x, 3)
+End If
+'closing prices are located in rows before the next row has a different stock
+    If Cells(x + 1, 1).Value <> Cells(x, 1).Value Then
+            
+    'find the ticker values, volumes, and closing value
+    ticker = Cells(x, 1).Value
+    closing = Cells(x, 6).Value
+    
+    'insert values into summary
+    Cells(Row, 13).Value = opening
+    Cells(Row, 14).Value = closing
+    Cells(Row, 9).Value = ticker
+    yearlychange = (Cells(Row, 14).Value - Cells(Row, 13).Value)
+    percentchange = ((Cells(Row, 14).Value - Cells(Row, 13).Value) / Cells(Row, 13).Value) * 100
+    Cells(Row, 10).Value = yearlychange
+    Cells(Row, 11).Value = percentchange
+End If
+    'Calculate total volume
+If Cells(x, 1).Value = Cells(Row, 9).Value Then
+    volume = volume + Cells(x, 7).Value
+    Cells(Row, 12).Value = volume
+    Row = Row + 1
+End If
+volume = 0
+Next x
+
+'Change colors
+For Z = 2 To 5000
+If Cells(Z, 11).Value >= 0 Then
+    Cells(Z, 11).Interior.ColorIndex = 4
+Else
+    Cells(Z, 11).Interior.ColorIndex = 3
+End If
+
+
+Next Z
+End Sub
+
